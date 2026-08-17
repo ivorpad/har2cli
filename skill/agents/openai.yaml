@@ -1,0 +1,4 @@
+interface:
+  display_name: "HAR to CLI"
+  short_description: "Turn a signed-in website flow into a tested CLI"
+  default_prompt: "Use $har2cli to learn a signed-in site in Chrome, capture a focused HAR, and generate a tested CLI."
