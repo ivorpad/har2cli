@@ -5,9 +5,24 @@ __pycache__/
 dist/
 *.egg-info/
 
+# HAR captures hold live browser credentials. Only the synthetic fixture ships.
+*.har
+!tests/fixtures/*.har
+
+# Local capture state, and env files feeding a scaffold's credential hook.
+.har2cli/
+.env
+.env.*
+
+# Generated scaffold output. Regenerate with `har2cli scaffold`.
+/webhooksite/
+.har2cli-scaffold-*
+
 # agent scratch, not part of the project
 PLAN.md
 PLAN-*.md
 plans/
 AGENTS.md
 CLAUDE.md
+
+.DS_Store
