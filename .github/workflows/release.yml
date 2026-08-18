@@ -1,0 +1,23 @@
+name: release
+
+# Tag-driven: `git tag v0.1.0 && git push --tags`. Needs a PyPI trusted
+# publisher for this repo and workflow, configured once at
+# https://pypi.org/manage/account/publishing/ — there is no token to store.
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v9.0.0
+      - run: uv build
+      # The wheel has to carry the package itself; asserted here because a
+      # broken release cannot be unpublished.
+      - run: unzip -l dist/*.whl | grep -q 'har2cli/cli.py'
+      - uses: pypa/gh-action-pypi-publish@v1.14.2

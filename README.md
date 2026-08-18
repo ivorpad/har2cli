@@ -19,9 +19,15 @@ the current command contract.
 ## Install
 
 ```bash
+uv tool install har2cli     # or: pip install har2cli
+har2cli --help
+```
+
+From a clone instead:
+
+```bash
 uv sync
 uv tool install --editable .
-har2cli --help
 ```
 
 ## Recipes
