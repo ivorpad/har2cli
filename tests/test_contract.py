@@ -10,7 +10,7 @@ from pathlib import Path
 import httpx
 import pytest
 
-from agentis import ExitCode, RefusedError, estimate_tokens, is_marked
+from agtcli import ExitCode, RefusedError, estimate_tokens, is_marked
 
 from har2cli import api, cli
 
@@ -191,11 +191,11 @@ class TestReplayOutputStaysSafeAndSmall:
 
 class TestTheChecklistStillPasses:
     def test_no_mechanical_check_fails(self):
-        from agentis.checks import run_checks
+        from agtcli.checks import run_checks
 
         failed = [r for r in run_checks(ROOT) if not r["ok"] and not r["manual"]]
         assert not failed, (
-            "agentis check would fail on: "
+            "agtcli check would fail on: "
             + ", ".join(f"{r['name']} ({r['detail']})" for r in failed)
         )
 

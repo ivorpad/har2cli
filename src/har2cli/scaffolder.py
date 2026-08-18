@@ -1,8 +1,8 @@
-"""Turn one inspected GET request into a small Agentis CLI project.
+"""Turn one inspected GET request into a small agtcli CLI project.
 
-The public entry point is :func:`scaffold_project`.  Agentis owns creation and
+The public entry point is :func:`scaffold_project`.  agtcli owns creation and
 the refusal to overwrite an existing target.  This module only replaces the
-generic files after ``agentis new`` succeeds.
+generic files after ``agtcli new`` succeeds.
 """
 
 from __future__ import annotations
@@ -20,7 +20,7 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import parse_qsl, urlsplit
 
-from agentis import UpstreamError, UsageError, write_atomic
+from agtcli import UpstreamError, UsageError, write_atomic
 
 REDACTED = "<redacted>"
 
@@ -61,9 +61,9 @@ def scaffold_project(
     response_fixture: Any,
     auth_names: Iterable[str],
 ) -> Path:
-    """Create an Agentis project for one captured GET endpoint.
+    """Create an agtcli project for one captured GET endpoint.
 
-    ``dest_parent`` is the directory in which Agentis creates
+    ``dest_parent`` is the directory in which agtcli creates
     ``project_name``. ``request`` may be a flat request mapping or a stored
     record with the request under a ``request`` key. HAR-style name/value
     lists and ordinary mappings are both accepted for headers, cookies and
@@ -111,17 +111,17 @@ def scaffold_project(
     staging = Path(tempfile.mkdtemp(prefix=".har2cli-scaffold-", dir=dest))
     staged_target = staging / project_name
     try:
-        result = _run_agentis(project_name, staging)
+        result = _run_agtcli(project_name, staging)
         if result.returncode:
-            message, remedy = _agentis_failure(result)
+            message, remedy = _agtcli_failure(result)
             error = UsageError if result.returncode == 2 else UpstreamError
             raise error(message, remedy=remedy)
 
         source = staged_target / "src" / project_name
         if not source.is_dir():
             raise UpstreamError(
-                f"Agentis reported success but did not create {source}",
-                remedy="check the Agentis checkout and run its scaffold tests",
+                f"agtcli reported success but did not create {source}",
+                remedy="check the agtcli installation and its scaffold tests",
             )
 
         rendered = _rendered_files(project_name, contract, fixture_json)
@@ -153,7 +153,7 @@ def _validate_project_name(name: str) -> None:
             f"{name!r} is not a safe project name",
             remedy="use at most 32 lowercase letters, digits, or underscores",
         )
-    collisions = {"agentis", "httpx", "pytest", "typer"}
+    collisions = {"agtcli", "httpx", "pytest", "typer"}
     if keyword.iskeyword(name) or name in sys.stdlib_module_names or name in collisions:
         raise UsageError(
             f"{name!r} collides with Python or a generated dependency",
@@ -161,11 +161,11 @@ def _validate_project_name(name: str) -> None:
         )
 
 
-def _run_agentis(project_name: str, dest: Path) -> subprocess.CompletedProcess[str]:
+def _run_agtcli(project_name: str, dest: Path) -> subprocess.CompletedProcess[str]:
     command = [
         sys.executable,
         "-m",
-        "agentis",
+        "agtcli",
         "new",
         project_name,
         "--description",
@@ -180,12 +180,12 @@ def _run_agentis(project_name: str, dest: Path) -> subprocess.CompletedProcess[s
         return subprocess.run(command, capture_output=True, text=True)
     except OSError as exc:
         raise UpstreamError(
-            f"could not start Agentis: {exc}",
-            remedy="install the Agentis dependency in this Python environment",
+            f"could not start agtcli: {exc}",
+            remedy="install agtcli in this Python environment",
         ) from exc
 
 
-def _agentis_failure(
+def _agtcli_failure(
     result: subprocess.CompletedProcess[str],
 ) -> tuple[str, str]:
     try:
@@ -193,12 +193,12 @@ def _agentis_failure(
     except (TypeError, json.JSONDecodeError):
         envelope = None
     if isinstance(envelope, Mapping):
-        message = str(envelope.get("message") or "Agentis refused the scaffold")
-        remedy = str(envelope.get("remedy") or "read `agentis new --help`")
+        message = str(envelope.get("message") or "agtcli refused the scaffold")
+        remedy = str(envelope.get("remedy") or "read `agtcli new --help`")
         return message, remedy
     return (
-        "Agentis failed while creating the project",
-        "run `python -m agentis new --help` and check the Agentis installation",
+        "agtcli failed while creating the project",
+        "run `python -m agtcli new --help` and check the agtcli installation",
     )
 
 
@@ -542,7 +542,7 @@ from __future__ import annotations
 import os
 from collections.abc import Mapping, Sequence
 
-from agentis import AuthError
+from agtcli import AuthError
 
 
 def load_credentials(
@@ -591,7 +591,7 @@ from pathlib import Path
 from typing import Any
 
 import httpx
-from agentis import AuthError, NotFoundError, TimeoutedError, UpstreamError
+from agtcli import AuthError, NotFoundError, TimeoutedError, UpstreamError
 
 from .credentials import load_credentials, refresh_credentials
 
@@ -746,7 +746,7 @@ import re
 from collections.abc import Mapping
 from typing import Any
 
-from agentis import trim
+from agtcli import trim
 
 from . import transport
 
@@ -838,8 +838,8 @@ from __future__ import annotations
 
 import typer
 
-import agentis
-from agentis import Session
+import agtcli
+from agtcli import Session
 
 from . import commands
 
@@ -864,7 +864,7 @@ if you are an agent:
     README.md.
 """
 
-app = agentis.build(
+app = agtcli.build(
     "__PROJECT__",
     help="Call one GET endpoint from a redacted browser request.",
     notes=AGENT_NOTES,
@@ -873,13 +873,13 @@ app = agentis.build(
 
 
 @app.command()
-@agentis.costly
+@agtcli.costly
 def get(ctx: typer.Context) -> None:
     """Call the captured GET endpoint once."""
     commands.get(Session.get(ctx))
 
 
-main = agentis.main_for(app)
+main = agtcli.main_for(app)
 '''
 
 
@@ -894,7 +894,7 @@ import sys
 from pathlib import Path
 
 import pytest
-from agentis import AuthError, is_marked
+from agtcli import AuthError, is_marked
 
 from __PROJECT__ import cli, commands, transport
 from __PROJECT__.commands import REDACTED, compact, sanitize
@@ -1079,15 +1079,15 @@ def test_command_calls_refresh_and_rediscovery_hooks(monkeypatch):
     assert events == ["guard", "refresh", "rediscover", "emit"]
 
 
-def test_help_carries_agentis_exit_codes():
+def test_help_carries_agtcli_exit_codes():
     output = run("--help")
     assert output.returncode == 0
     assert "not_found" in output.stdout
     assert max(len(line) for line in cli.AGENT_NOTES.splitlines()) <= 76
 
 
-def test_agentis_mechanical_checks_still_pass():
-    from agentis.checks import run_checks
+def test_agtcli_mechanical_checks_still_pass():
+    from agtcli.checks import run_checks
 
     failed = [item for item in run_checks(ROOT) if not item["ok"] and not item["manual"]]
     assert not failed, failed
@@ -1139,7 +1139,7 @@ transport and credential hooks in `src/__PROJECT__/transport.py` and
 
 ```bash
 uv run pytest -q
-uv run agentis check .
+uv run agtcli check .
 ```
 
 Run the dumb-agent test too: give a weak agent the command and a vague task,

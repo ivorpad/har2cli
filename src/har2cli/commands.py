@@ -7,7 +7,7 @@ import math
 from pathlib import Path
 from typing import Any
 
-from agentis import (
+from agtcli import (
     AuthError,
     NotFoundError,
     RefusedError,

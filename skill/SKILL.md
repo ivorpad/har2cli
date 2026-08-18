@@ -2,7 +2,7 @@
 name: har2cli
 description: >-
   Use Chrome to learn a signed-in website flow, obtain a focused HAR, replay
-  one captured GET safely, and generate a tested Agentis CLI. Use for a
+  one captured GET safely, and generate a tested agtcli CLI. Use for a
   website, browser workflow, authenticated endpoint, or existing HAR.
 ---
 

@@ -107,7 +107,7 @@ agent transcript.
 cd /absolute/parent/mycli
 uv sync
 uv run pytest -q
-uv run agentis check .
+uv run agtcli check .
 uv run mycli --help
 ```
 
@@ -128,7 +128,7 @@ Do not retry stale values.
 
 Finish only when the selected GET maps to the observed action, an approved
 replay returned the expected state or the user accepted an unverified scaffold,
-generated tests and `agentis check .` pass, and no credential value entered
+generated tests and `agtcli check .` pass, and no credential value entered
 source, fixtures, output, the repository, or the transcript.
 
 Delete only task-specific temporary state you created. Never delete the source

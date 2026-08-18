@@ -22,7 +22,7 @@ from typing import Any
 import httpx
 import pytest
 
-from agentis import ExitCode
+from agtcli import ExitCode
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -314,13 +314,13 @@ def invoke_in_process(
     config_dir: Path,
     *args: str,
 ) -> tuple[int, str, str]:
-    """Run through Agentis error handling while keeping monkeypatches active."""
-    from agentis import run
-    from agentis import output as agentis_output
+    """Run through agtcli error handling while keeping monkeypatches active."""
+    from agtcli import run
+    from agtcli import output as agtcli_output
     from har2cli import cli
 
     monkeypatch.setenv("HAR2CLI_CONFIG_DIR", str(config_dir))
-    agentis_output._STDOUT_HAS_JSON = False
+    agtcli_output._STDOUT_HAS_JSON = False
     code = int(run(cli.app, args))
     captured = capsys.readouterr()
     return code, captured.out, captured.err

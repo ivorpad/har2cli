@@ -8,7 +8,7 @@ import zipfile
 from pathlib import Path
 
 import pytest
-from agentis import UsageError
+from agtcli import UsageError
 
 from har2cli import scaffolder
 from har2cli.scaffolder import REDACTED, scaffold_project
@@ -149,7 +149,7 @@ def test_generated_project_contract_tests_pass(generated: Path):
     assert result.returncode == 0, result.stdout + result.stderr
 
 
-def test_existing_target_refusal_comes_from_agentis(generated: Path):
+def test_existing_target_refusal_comes_from_agtcli(generated: Path):
     with pytest.raises(UsageError, match="already exists"):
         scaffold_project(
             generated.name,

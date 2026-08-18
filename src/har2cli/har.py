@@ -9,7 +9,7 @@ from datetime import UTC, datetime
 from typing import Any
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
-from agentis import NotFoundError, UsageError, trim
+from agtcli import NotFoundError, UsageError, trim
 
 REDACTED = "<redacted>"
 REDACTED_BODY = "<redacted body>"

@@ -9,8 +9,8 @@ from pathlib import Path
 
 import typer
 
-import agentis
-from agentis import Session
+import agtcli
+from agtcli import Session
 
 from . import commands
 
@@ -40,20 +40,20 @@ with --json, stdout is only ever JSON, errors included; everything else is
 stderr.
 """
 
-app = agentis.build(
+app = agtcli.build(
     "har2cli",
-    help="Turn authenticated HAR flows into safe Agentis CLI scaffolds.",
+    help="Turn authenticated HAR flows into safe agtcli CLI scaffolds.",
     notes=AGENT_NOTES,
     unit="requests",
 )
 
-# Agentis currently lets NaN/infinity reach its Pydantic guard and turns a
+# agtcli currently lets NaN/infinity reach its Pydantic guard and turns a
 # negative limit into an uncaught validation error. Keep this CLI's advertised
 # typed JSON contract while the framework checkout is fixed separately.
-_agentis_root = app.registered_callback.callback
+_agtcli_root = app.registered_callback.callback
 
 
-@functools.wraps(_agentis_root)
+@functools.wraps(_agtcli_root)
 def _validated_root(
     ctx: typer.Context,
     as_json: bool = False,
@@ -62,20 +62,20 @@ def _validated_root(
     max_legacy: float | None = None,
 ) -> None:
     if max_cost is not None and (not math.isfinite(max_cost) or max_cost < 0):
-        raise agentis.UsageError(
+        raise agtcli.UsageError(
             "--max-cost must be a finite number at least zero"
         )
     if max_cost is None and (ambient := os.environ.get("HAR2CLI_MAX_COST")):
         try:
             parsed = float(ambient)
         except ValueError:
-            parsed = None  # Agentis supplies the existing typed remedy.
+            parsed = None  # agtcli supplies the existing typed remedy.
         if parsed is not None and (not math.isfinite(parsed) or parsed < 0):
-            raise agentis.RefusedError(
+            raise agtcli.RefusedError(
                 "HAR2CLI_MAX_COST must be a finite number at least zero",
                 remedy="fix or unset HAR2CLI_MAX_COST",
             )
-    _agentis_root(
+    _agtcli_root(
         ctx,
         as_json=as_json,
         raw=raw,
@@ -112,7 +112,7 @@ def inspect_request(
 
 
 @app.command()
-@agentis.costly
+@agtcli.costly
 def replay(
     ctx: typer.Context,
     request_id: str = typer.Argument(..., help="captured GET request id"),
@@ -133,7 +133,7 @@ def replay(
 
 
 @app.command("auth-bisect")
-@agentis.costly
+@agtcli.costly
 def auth_bisect(
     ctx: typer.Context,
     request_id: str = typer.Argument(..., help="captured GET request id"),
@@ -154,7 +154,7 @@ def auth_bisect(
 
 
 @app.command()
-@agentis.costly
+@agtcli.costly
 def scaffold(
     ctx: typer.Context,
     name: str = typer.Argument(..., help="new CLI package and command name"),
@@ -166,7 +166,7 @@ def scaffold(
         help="use a reviewed auth-bisect result",
     ),
 ) -> None:
-    """Pass one selected redacted GET to Agentis and adapt its scaffold."""
+    """Pass one selected redacted GET to agtcli and adapt its scaffold."""
     commands.scaffold(
         Session.get(ctx),
         name,
@@ -176,4 +176,4 @@ def scaffold(
     )
 
 
-main = agentis.main_for(app)
+main = agtcli.main_for(app)

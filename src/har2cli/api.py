@@ -19,7 +19,7 @@ from urllib.parse import urlsplit
 
 import httpx
 
-from agentis import RefusedError, TimeoutedError, UpstreamError, trim
+from agtcli import RefusedError, TimeoutedError, UpstreamError, trim
 
 ALLOWED_METHOD = "GET"
 AUTH_FAILURES = {401, 403}

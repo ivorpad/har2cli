@@ -1,10 +1,10 @@
 # har2cli
 
 Turn an authenticated browser HAR into a redacted HTTP contract, then hand one
-GET endpoint to [Agentis](../2026-08-06-agentis-cli-fw/) for packaging as a
-CLI.
+GET endpoint to [agtcli](https://github.com/ivorpad/agent-cli-scaffold) for
+packaging as a CLI.
 
-`har2cli` derives and tests the request. Agentis owns the generated CLI
+`har2cli` derives and tests the request. agtcli owns the generated CLI
 contract. A HAR does not explain domain intent, so the generated `get` command
 is a starting point, not a claim that the API has been understood completely.
 
@@ -75,7 +75,7 @@ The command refuses missing, malformed, or stale bisection evidence. Its JSON
 output records whether auth came from captured candidates or an accepted
 bisection and lists every omitted candidate name.
 
-Generate one Agentis CLI from the selected contract:
+Generate one agtcli CLI from the selected contract:
 
 ```bash
 har2cli scaffold orders --request req-42
@@ -129,9 +129,8 @@ stdout is one JSON document; notes and errors also go to stderr.
 ```bash
 uv sync
 uv run pytest -q
-uv run agentis check .
+uv run agtcli check .
 ```
 
-`pyproject.toml` points Agentis at its absolute editable checkout because it is
-not published. Moving that checkout breaks `uv sync` until the source path is
-updated.
+The agtcli framework installs from
+[PyPI](https://pypi.org/project/agtcli/).
